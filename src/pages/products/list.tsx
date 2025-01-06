@@ -13,18 +13,22 @@ import {
 
 import { Table, Space, Select, Radio } from "antd";
 
-import type { IPost, ICategory } from "../../interfaces";
+import type { IPost, ICategory, IProduct } from "../../interfaces";
 
 export const PostList = () => {
-  const { tableProps, sorters, filters } = useTable<IPost>({
+  const { tableProps, sorters, filters } = useTable<IProduct>({
+    pagination: {
+      pageSize: 20,
+    },
     initialSorter: [
       {
         field: "id",
         order: "asc",
       },
     ],
+    
     metaData: {
-      select: "*, categories(title)",
+      select: "*, categories(category_name)",
     },
   });
 
@@ -43,18 +47,18 @@ export const PostList = () => {
           defaultSortOrder={getDefaultSortOrder("id", sorters)}
         />
         <Table.Column
-          key="title"
-          dataIndex="title"
-          title="Title"
+          key="product_name"
+          dataIndex="product_name"
+          title="Product Name"
           sorter
-          defaultSortOrder={getDefaultSortOrder("title", sorters)}
+          defaultSortOrder={getDefaultSortOrder("product_name", sorters)}
         />
         <Table.Column
-          key="categoryId"
-          dataIndex={["categories", "title"]}
+          key="category_id"
+          dataIndex={["categories", "category_name"]}
           title="Category"
-          defaultSortOrder={getDefaultSortOrder("categories.title", sorters)}
-          defaultFilteredValue={getDefaultFilter("categoryId", filters, "in")}
+          defaultSortOrder={getDefaultSortOrder("categories.category_name", sorters)}
+          defaultFilteredValue={getDefaultFilter("category_id", filters, "in")}
           filterDropdown={(props) => (
             <FilterDropdown {...props}>
               <Select
@@ -66,7 +70,7 @@ export const PostList = () => {
             </FilterDropdown>
           )}
         />
-        <Table.Column<IPost>
+        <Table.Column<IProduct>
           title="Actions"
           dataIndex="actions"
           render={(_, record) => (

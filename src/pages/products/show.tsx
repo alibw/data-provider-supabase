@@ -1,9 +1,7 @@
-import { useShow, useOne } from "@refinedev/core";
+import { useShow, useOne , useSelect } from "@refinedev/core";
 
 import {
   Show,
-  MarkdownField,
-  ImageField,
   ListButton,
   EditButton,
   RefreshButton,
@@ -11,7 +9,7 @@ import {
 
 import { Typography, Space, Alert, Button } from "antd";
 
-import type { IPost, ICategory } from "../../interfaces";
+import type { IProduct, ICategory } from "../../interfaces";
 import { useState } from "react";
 
 const { Title, Text } = Typography;
@@ -19,7 +17,7 @@ const { Title, Text } = Typography;
 export const PostShow = () => {
   const [isDeprecated, setIsDeprecated] = useState(false);
 
-  const { query: queryResult } = useShow<IPost>({
+  const { query: queryResult } = useShow<IProduct>({
     liveMode: "manual",
     onLiveEvent: () => {
       setIsDeprecated(true);
@@ -29,10 +27,15 @@ export const PostShow = () => {
   const { data, isLoading } = queryResult;
   const record = data?.data;
 
+  const { selectProps: categorySelectProps } = useSelect<ICategory>({
+    resource: "categories",
+    defaultValue: record?.category_id,
+  });
+
   const { data: categoryData, isLoading: categoryIsLoading } =
     useOne<ICategory>({
       resource: "categories",
-      id: record?.categoryId || "",
+      id: record?.category_id || "",
       queryOptions: {
         enabled: !!record,
       },
@@ -74,30 +77,12 @@ export const PostShow = () => {
       <Title level={5}>Id</Title>
       <Text>{record?.id}</Text>
 
-      <Title level={5}>Title</Title>
-      <Text>{record?.title}</Text>
+      <Title level={5}>Product Name</Title>
+      <Text>{record?.product_name}</Text>
 
       <Title level={5}>Category</Title>
-      <Text>{categoryIsLoading ? "Loading..." : categoryData?.data.title}</Text>
+      <Text>{categoryIsLoading ? "Loading..." : categoryData?.data.category_name}</Text>
 
-      <Title level={5}>Content</Title>
-      <MarkdownField value={record?.content} />
-
-      <Title level={5}>Images</Title>
-      <Space wrap>
-        {record?.images ? (
-          record?.images.map((img) => (
-            <ImageField
-              key={img.name}
-              value={img.url}
-              title={img.name}
-              width={200}
-            />
-          ))
-        ) : (
-          <Text>Not found any images</Text>
-        )}
-      </Space>
     </Show>
   );
 };

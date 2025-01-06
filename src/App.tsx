@@ -24,7 +24,7 @@ import { BrowserRouter, Routes, Route, Outlet } from "react-router";
 
 import "@refinedev/antd/dist/reset.css";
 
-import { PostList, PostCreate, PostEdit, PostShow } from "../src/pages/posts";
+import { PostList, PostCreate, PostEdit, PostShow } from "../src/pages/products";
 import { supabaseClient } from "../src/utility";
 
 const authProvider: AuthProvider = {
@@ -280,14 +280,13 @@ const App: React.FC = () => {
           dataProvider={dataProvider(supabaseClient)}
           liveProvider={liveProvider(supabaseClient)}
           routerProvider={routerProvider}
-          authProvider={authProvider}
           resources={[
             {
-              name: "blog_posts",
-              list: "/blog-posts",
-              create: "/blog-posts/create",
-              edit: "/blog-posts/edit/:id",
-              show: "/blog-posts/show/:id",
+              name: "products",
+              list: "/products",
+              create: "/products/create",
+              edit: "/products/edit/:id",
+              show: "/products/show/:id",
               meta: {
                 canDelete: true,
               },
@@ -308,22 +307,17 @@ const App: React.FC = () => {
           <Routes>
             <Route
               element={
-                <Authenticated
-                  key="authenticated-routes"
-                  fallback={<CatchAllNavigate to="/login" />}
-                >
                   <ThemedLayoutV2>
                     <Outlet />
                   </ThemedLayoutV2>
-                </Authenticated>
               }
             >
               <Route
                 index
-                element={<NavigateToResource resource="blog_posts" />}
+                element={<NavigateToResource resource="products" />}
               />
 
-              <Route path="/blog-posts">
+              <Route path="/products">
                 <Route index element={<PostList />} />
                 <Route path="create" element={<PostCreate />} />
                 <Route path="edit/:id" element={<PostEdit />} />
@@ -333,39 +327,10 @@ const App: React.FC = () => {
 
             <Route
               element={
-                <Authenticated key="auth-pages" fallback={<Outlet />}>
-                  <NavigateToResource resource="blog_posts" />
-                </Authenticated>
+                  <NavigateToResource resource="products" />
               }
             >
-              <Route
-                path="/login"
-                element={
-                  <AuthPage
-                    type="login"
-                    providers={[
-                      {
-                        name: "google",
-                        label: "Sign in with Google",
-                        icon: (
-                          <GoogleOutlined
-                            style={{
-                              fontSize: 18,
-                              lineHeight: 0,
-                            }}
-                          />
-                        ),
-                      },
-                    ]}
-                    formProps={{
-                      initialValues: {
-                        email: "info@refine.dev",
-                        password: "refine-supabase",
-                      },
-                    }}
-                  />
-                }
-              />
+
               <Route path="/register" element={<AuthPage type="register" />} />
               <Route
                 path="/forgot-password"

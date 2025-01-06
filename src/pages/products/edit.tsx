@@ -13,7 +13,7 @@ import { Alert, Button, Form, Input, Select, Upload } from "antd";
 
 import MDEditor from "@uiw/react-md-editor";
 
-import type { IPost, ICategory } from "../../interfaces";
+import type { IPost, ICategory, IProduct } from "../../interfaces";
 import { supabaseClient, normalizeFile } from "../../utility";
 
 export const PostEdit = () => {
@@ -22,7 +22,7 @@ export const PostEdit = () => {
     formProps,
     saveButtonProps,
     query: queryResult,
-  } = useForm<IPost>({
+  } = useForm<IProduct>({
     liveMode: "manual",
     onLiveEvent: () => {
       setIsDeprecated(true);
@@ -32,7 +32,9 @@ export const PostEdit = () => {
   const postData = queryResult?.data?.data;
   const { selectProps: categorySelectProps } = useSelect<ICategory>({
     resource: "categories",
-    defaultValue: postData?.categoryId,
+    defaultValue: postData?.category_id,
+    optionLabel: "category_name",
+    optionValue: "id"
   });
 
   const handleRefresh = () => {
@@ -69,8 +71,8 @@ export const PostEdit = () => {
 
       <Form {...formProps} layout="vertical">
         <Form.Item
-          label="Title"
-          name="title"
+          label="Product Name"
+          name="Product_name"
           rules={[
             {
               required: true,
@@ -81,7 +83,7 @@ export const PostEdit = () => {
         </Form.Item>
         <Form.Item
           label="Category"
-          name="categoryId"
+          name="category_id"
           rules={[
             {
               required: true,
@@ -89,53 +91,6 @@ export const PostEdit = () => {
           ]}
         >
           <Select {...categorySelectProps} />
-        </Form.Item>
-        <Form.Item
-          label="Content"
-          name="content"
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <MDEditor data-color-mode="light" />
-        </Form.Item>
-        <Form.Item label="Images">
-          <Form.Item
-            name="images"
-            valuePropName="fileList"
-            normalize={normalizeFile}
-            noStyle
-          >
-            <Upload.Dragger
-              name="file"
-              listType="picture"
-              multiple
-              customRequest={async ({ file, onError, onSuccess }) => {
-                const rcFile = file as RcFile;
-                const fileUrl = `public/${rcFile.name}`;
-
-                const { error } = await supabaseClient.storage
-                  .from("refine")
-                  .upload(fileUrl, file, {
-                    cacheControl: "3600",
-                    upsert: true,
-                  });
-
-                if (error) {
-                  return onError?.(error);
-                }
-                const { data } = await supabaseClient.storage
-                  .from("refine")
-                  .getPublicUrl(fileUrl);
-
-                onSuccess?.({ url: data?.publicUrl }, new XMLHttpRequest());
-              }}
-            >
-              <p className="ant-upload-text">Drag & drop a file in this area</p>
-            </Upload.Dragger>
-          </Form.Item>
         </Form.Item>
       </Form>
     </Edit>

@@ -1,6 +1,6 @@
 export interface ICategory {
-  id: string;
-  title: string;
+  id: number;
+  category_name: string;
 }
 
 export interface IFile {
@@ -20,3 +20,10 @@ export interface IPost {
   categoryId: string;
   images: IFile[];
 }
+
+export interface IProduct {
+  id: number;
+  product_name: string;
+  category_id: string;
+}
+
