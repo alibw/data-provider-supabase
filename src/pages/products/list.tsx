@@ -54,11 +54,11 @@ export const PostList = () => {
           defaultSortOrder={getDefaultSortOrder("product_name", sorters)}
         />
         <Table.Column
-          key="category_id"
+          key="category_name"
           dataIndex={["categories", "category_name"]}
           title="Category"
           defaultSortOrder={getDefaultSortOrder("categories.category_name", sorters)}
-          defaultFilteredValue={getDefaultFilter("category_id", filters, "in")}
+          defaultFilteredValue={getDefaultFilter("category_name", filters, "eq")}
           filterDropdown={(props) => (
             <FilterDropdown {...props}>
               <Select
